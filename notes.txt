@@ -1,0 +1,37 @@
+# impliment the LS-8 emulator
+`LDI` - load "immediate", store a value in a register, or "set this register to this value"
+`PRN` - a pseudo-instruction that prints the numeric value stored in a register
+`HLT` - halt the CPU and exit the emulator
+
+
+# add constructor to `cpu.py`
+add list properties to the CPU class to hold 259 bytes of memory and 8 general-purpose registers
+x = [0] * 25  # x is a list of 25 zeroes
+
+
+# RAM functions
+ram_read and ram_write should access the RAM inside the CPU object
+
+`ram_read()` - should accept the address to read and return the value stored there
+`ram_write()` - should accept a value to write, and address to write it to
+
+
+# the core of CPU's run() method
+* the most difficult to write
+* needs to read the memory address that is stored in register `PC`, and store that result in `IR`, the `Instruction Register`. This can be a local variable in `run()`
+* variables `operand_a` and `operand_b`
+
+read that section again when you write the `run()` method ☝️
+
+
+# HLT instruction
+* add `HLT` instruction definition to `cpu.py` so that you can refer it by name instead of numeric value
+* in `run()`, exit the loop if a `HLT` instruction is encountered, regardless of whether or not there is more code
+* we can consider `HLT` to be similar to pythons `exit()` in that we stop whatever we are doing, wherever we are
+
+# LDI instruction
+sets a specific register to a specified value
+
+# PRN instruction 
+very similar process to adding `LDI`, the the handler is simplier 
+

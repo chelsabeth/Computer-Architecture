@@ -7,12 +7,27 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
+        self.ram = [0] * 256 # 256 bytes of memory 
+        self.register = [0] * 8 # 8 general-purpose registers
+        self.PC = pass
+        self.IR = pass
+        self. MAR = pass
+        self.MDR = pass
+
+    def LDI():
+        pass
+
+    def PRN():
+        pass
+
+    def HLT():
         pass
 
     def load(self):
         """Load a program into memory."""
 
         address = 0
+
 
         # For now, we've just hardcoded a program:
 
@@ -59,6 +74,13 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+
+    def ram_read():
+        pass
+
+    def ram_write():
+        pass
+    
 
     def run(self):
         """Run the CPU."""
