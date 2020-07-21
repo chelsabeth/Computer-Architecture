@@ -8,20 +8,21 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.ram = [0] * 256 # 256 bytes of memory 
-        self.register = [0] * 8 # 8 general-purpose registers
-        self.PC = pass
-        self.IR = pass
-        self. MAR = pass
-        self.MDR = pass
+        self.reg = [0] * 8 # 8 general-purpose registers R0-R7
+        self.pc = 0 
+        # self.IR = 0
+        # self.MAR = 0
+        # self.MDR = 0
+        # self.FL = 0
 
-    def LDI():
+    def LDI(self):
         pass
 
-    def PRN():
+    def PRN(self):
         pass
 
-    def HLT():
-        pass
+    def HLT(self):
+        exit()
 
     def load(self):
         """Load a program into memory."""
@@ -75,11 +76,11 @@ class CPU:
 
         print()
 
-    def ram_read():
-        pass
+    def ram_read(self, address):
+        return self.ram[address]
 
-    def ram_write():
-        pass
+    def ram_write(self, write, address):
+        self.ram[address] = write
     
 
     def run(self):

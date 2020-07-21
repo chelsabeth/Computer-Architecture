@@ -35,3 +35,22 @@ sets a specific register to a specified value
 # PRN instruction 
 very similar process to adding `LDI`, the the handler is simplier 
 
+
+<!-- SPEC -->
+# Registers
+8 general purpose 8-bit numeric registers R0-R7
+* R5 - reserved as the interrupt mask (IM) -- `ignore`
+* R6 - reserved as the interrupt status (IS) -- `ignore`
+* R7 - reserved as the stack pointer (SP)
+
+
+# Internal Registers
+* PC - Program Counter 
+* IR - Instruction Register
+* MAR - Memory Address Register
+* MDR - Memory Data Register 
+
+
+# Stack 
+the SP points at the value at the top of the stack (most recently pushed) or at address `F4` if the stack is empty
+
