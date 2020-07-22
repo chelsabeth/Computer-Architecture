@@ -10,7 +10,7 @@ class CPU:
         self.ram = [0] * 256 # 256 bytes of memory 
         self.reg = [0] * 8 # 8 general-purpose registers R0-R7
         self.pc = 0 
-        # self.IR = 0
+        # self.ir = 0
         # self.MAR = 0
         # self.MDR = 0
         # self.FL = 0
@@ -83,6 +83,15 @@ class CPU:
         self.ram[address] = write
     
 
-    def run(self):
+    def run(self, address):
         """Run the CPU."""
-        pass
+        ir = self.pc[address] # read the memory address that's stored in pc and store the result in ir
+        self.pc += 2 # 2 bytes of data after the pc in memory 
+        # using ram_read(), read the bytes at pc+1 and pc+2
+        # from RAM into variables operand_a and operand_b
+        operand_a = self.ram_read(address+1)
+        operand_b = self.ram_read(address+2)
+        self.pc += 1
+
+        # with an if else cascade, go through the bits it give you and decide what instructions you should do
+
