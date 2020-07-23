@@ -15,13 +15,17 @@ class CPU:
         # self.MDR = 0
         # self.FL = 0
 
-    def LDI(self):
-        pass
+    def LDI(self, reg, immediate):
+        # set the value of a register to an integer
+        self.reg[reg] = immediate 
 
-    def PRN(self):
-        pass
+    def PRN(self, reg):
+        # print numeric value stored in the given register 
+        # print in the console the decimal integer value that is stored in the given register
+        print(self.reg[reg])
 
     def HLT(self):
+        # halt the CPU
         exit()
 
     def load(self):
@@ -83,15 +87,38 @@ class CPU:
         self.ram[address] = write
     
 
-    def run(self, address):
+    def run(self):
         """Run the CPU."""
-        ir = self.pc[address] # read the memory address that's stored in pc and store the result in ir
-        self.pc += 2 # 2 bytes of data after the pc in memory 
-        # using ram_read(), read the bytes at pc+1 and pc+2
-        # from RAM into variables operand_a and operand_b
-        operand_a = self.ram_read(address+1)
-        operand_b = self.ram_read(address+2)
-        self.pc += 1
+        running = True
+
+        while running:
+            # read the memory address that's stored in pc and store the result in ir
+            ir = self.ram_read(self.pc) 
+            # using ram_read(), read the bytes at pc+1 and pc+2
+            # from RAM into variables operand_a and operand_b
+            operand_a = self.ram_read(self.pc+1)
+            operand_b = self.ram_read(self.pc+2)
+            instBinString = format(ir, '#010b')
+            # console log instBinString
+            # set the pc according 
+
+            operands_count = instBinString[2:3]
+            alu_op = instBinString[4]
+            sets_pc = instBinString[5]
+            inst_id = instBinString[6:]
+
+            if inst_id == '0001':
+                self.HLT()
+            elif inst_id == '0010':
+                self.LDI(operand_a, operand_b)
+                self.pc += 3
+            elif inst_id == '0111':
+                self.PRN(operand_a)
+                self.pc += 2
+
+                # PRN, LDI and string problem 
+
+
 
         # with an if else cascade, go through the bits it give you and decide what instructions you should do
 
