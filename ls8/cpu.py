@@ -115,12 +115,15 @@ class CPU:
 
             if inst_id == '0001':
                 self.HLT()
-            elif inst_id == '0010':
+            elif inst_id == '0010' and alu_op == '0':
                 self.LDI(operand_a, operand_b)
                 self.pc += 3
             elif inst_id == '0111':
                 self.PRN(operand_a)
                 self.pc += 2
+            elif inst_id == '0010' and alu_op == '1':
+                self.alu('MUL', operand_a, operand_b)
+                self.pc += 3
 
                 # PRN, LDI and string problem 
 
