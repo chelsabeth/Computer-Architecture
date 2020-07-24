@@ -39,8 +39,6 @@ class CPU:
 
         # Increment SP
         self.reg[7] += 1
-
-        # self.pc += 2
         
 
     def PUSH(self, reg):
@@ -51,6 +49,55 @@ class CPU:
 
         addr_to_push_to = self.reg[7]
         self.ram_write(value, addr_to_push_to)
+
+    def CALL(self, reg):
+        return_addr = self.pc + 2 
+
+        self.reg[7] -= 1
+        addr_to_push_to = self.reg[7]
+        self.ram_write(return_addr, addr_to_push_to)
+
+        reg_num = self.ram_read(self.pc + 1)
+        subroutine_addr = self.reg[reg_num]
+
+        self.pc = subroutine_addr
+
+    def RET(self):
+        addr_to_pop_from = self.reg[7]
+        return_addr = self.ram_read(addr_to_pop_from)
+        self.reg[7] += 1
+
+        self.pc = return_addr
+
+    def ADD(self, reg_a, reg_b):
+        self.alu('ADD', reg_a, reg_b)
+
+
+
+
+#          # Get address of the next instruction
+#         return_addr = pc + 2
+# ​
+#         # Push that on the stack
+#         register[SP] -= 1
+#         address_to_push_to = register[SP]
+#         memory[address_to_push_to] = return_addr
+# ​
+#         # Set the PC to the subroutine address
+#         reg_num = memory[pc + 1]
+#         subroutine_addr = register[reg_num]
+# ​
+#         pc = subroutine_addr
+# ​
+#     elif inst == RET:
+#         # Get return address from the top of the stack
+#         address_to_pop_from = register[SP]
+#         return_addr = memory[address_to_pop_from]
+#         register[SP] += 1
+# ​
+#         # Set the PC to the return address
+#         pc = return_addr
+
 
 
     def load(self):
@@ -83,10 +130,6 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] = self.reg[reg_a] * self.reg[reg_b]
-            # Questions for bub:
-            # how can I store the result in a parameter? 
-            # do I use both of the registers that we pass in? 
-            # do I need to call alu somewhere and pass in the right registers? 
         else:
             raise Exception("Unsupported ALU operation")
         
@@ -120,7 +163,7 @@ class CPU:
     def ram_write(self, write, address):
         self.ram[address] = write
     
-    
+
 
     def run(self):
         running = True
@@ -131,7 +174,10 @@ class CPU:
             '0b01000111': self.PRN,
             '0b10100010': self.MUL,
             '0b01000101': self.PUSH,
-            '0b01000110': self.POP
+            '0b01000110': self.POP,
+            '0b10100000': self.ADD,
+            '0b01010000': self.CALL,
+            '0b00010001': self.RET
         }
 
         while running:
@@ -144,7 +190,6 @@ class CPU:
             alu_op = instBinString[4]
             sets_pc = instBinString[5]
             inst_id = instBinString[6:]
-
             if instBinString in fix_my_run:
                 function = fix_my_run[instBinString]
                 if arguments == "00":
