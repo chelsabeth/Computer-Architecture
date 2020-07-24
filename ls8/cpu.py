@@ -72,6 +72,25 @@ class CPU:
     def ADD(self, reg_a, reg_b):
         self.alu('ADD', reg_a, reg_b)
 
+    def JMP(self, reg):
+        # jump to the addr stored in the given register
+        self.reg[reg] = self.pc
+        # set the pc to the addr stored in the given register
+        self.pc = self.reg[reg]
+
+    def JEQ(self, reg):
+        # if equal flag is set to true 
+        if self.reg[9] == '1':
+            # jump to the addr stored in the given reg
+            self.reg[reg] = self.pc 
+
+    def JNE(self, reg):
+        # jump to the addr stored in the given register 
+        self.reg[reg] = self.pc
+        # set the pc to the addr stored in the given reg
+        self.pc = self.reg[reg]
+
+
 
 
 
@@ -130,12 +149,36 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] = self.reg[reg_a] * self.reg[reg_b]
+        elif op == "CMP":
+            if reg_a < reg_b:
+                reg_a[7] = '1'
+                reg_b[7] = '1'
+                reg_a[8] = '0'
+                reg_b[8] = '0'
+                reg_a[9] = '0'
+                reg_b[9] = '0'
+            elif reg_a > reg_b:
+                reg_a[8] = '1'
+                reg_b[8] = '1'
+                reg_a[7] = '0'
+                reg_b[7] = '0'
+                reg_a[9] = '0'
+                reg_b[9] = '0'
+            elif reg_a == reg_b:
+                reg_a[9] = '1'
+                reg_b[9] = '1'
+                reg_a[8] = '0'
+                reg_b[8] = '0'
+                reg_a[7] = '0'
+                reg_b[7] = '0'
         else:
             raise Exception("Unsupported ALU operation")
         
     def MUL(self, a, b):
         self.alu('MUL', a, b)
 
+    def CMP(self, a, b):
+        self.alu('CMP', a, b)
 
     def trace(self):
         """
@@ -177,7 +220,11 @@ class CPU:
             '0b01000110': self.POP,
             '0b10100000': self.ADD,
             '0b01010000': self.CALL,
-            '0b00010001': self.RET
+            '0b00010001': self.RET,
+            '0b10100111': self.CMP,
+            '0b01010100': self.JMP,
+            '0b01010101': self.JEQ,
+            '0b01010110': self.JNE
         }
 
         while running:
