@@ -46,7 +46,7 @@ class CPU:
                         self.ram[address] = line
                         address += 1
                     except ValueError:
-                        pass
+                        print("Value Error")
         except FileNotFoundError:
             print(f"Couldn't find file {sys.argv[1]}")
             sys.exit(1)
@@ -65,6 +65,10 @@ class CPU:
             # do I need to call alu somewhere and pass in the right registers? 
         else:
             raise Exception("Unsupported ALU operation")
+        
+    def MUL(self, a, b):
+        self.alu('MUL', a, b)
+
 
     def trace(self):
         """
@@ -93,41 +97,74 @@ class CPU:
         self.ram[address] = write
     
 
+    # def run(self):
+    #     """Run the CPU."""
+    #     running = True
+
+    #     while running:
+    #         # read the memory address that's stored in pc and store the result in ir
+    #         ir = self.ram_read(self.pc) 
+    #         # using ram_read(), read the bytes at pc+1 and pc+2
+    #         # from RAM into variables operand_a and operand_b
+    #         operand_a = self.ram_read(self.pc+1)
+    #         operand_b = self.ram_read(self.pc+2)
+    #         instBinString = format(ir, '#010b')
+    #         # console log instBinString
+    #         # set the pc according 
+
+    #         operands_count = instBinString[2:3]
+    #         alu_op = instBinString[4]
+    #         sets_pc = instBinString[5]
+    #         inst_id = instBinString[6:]
+
+    #         if inst_id == '0001':
+    #             self.HLT()
+    #         elif inst_id == '0010' and alu_op == '0':
+    #             self.LDI(operand_a, operand_b)
+    #             self.pc += 3
+    #         elif inst_id == '0111':
+    #             self.PRN(operand_a)
+    #             self.pc += 2
+    #         elif inst_id == '0010' and alu_op == '1':
+    #             self.alu('MUL', operand_a, operand_b)
+    #             self.pc += 3
+
     def run(self):
-        """Run the CPU."""
         running = True
 
-        while running:
-            # read the memory address that's stored in pc and store the result in ir
-            ir = self.ram_read(self.pc) 
-            # using ram_read(), read the bytes at pc+1 and pc+2
-            # from RAM into variables operand_a and operand_b
-            operand_a = self.ram_read(self.pc+1)
-            operand_b = self.ram_read(self.pc+2)
-            instBinString = format(ir, '#010b')
-            # console log instBinString
-            # set the pc according 
+        fix_my_run = {
+            '0b00000001': self.HLT,
+            '0b10000010': self.LDI,
+            '0b01000111': self.PRN,
+            '0b10100010': self.MUL
+        }
 
-            operands_count = instBinString[2:3]
+        while running:
+            ir = self.ram_read(self.pc)
+            op_1 = self.ram_read(self.pc+1)
+            op_2 = self.ram_read(self.pc+2)
+
+            instBinString = format(ir, '#010b')
+            arguments = instBinString[2:4] # Was 2:3
             alu_op = instBinString[4]
             sets_pc = instBinString[5]
             inst_id = instBinString[6:]
 
-            if inst_id == '0001':
-                self.HLT()
-            elif inst_id == '0010' and alu_op == '0':
-                self.LDI(operand_a, operand_b)
-                self.pc += 3
-            elif inst_id == '0111':
-                self.PRN(operand_a)
-                self.pc += 2
-            elif inst_id == '0010' and alu_op == '1':
-                self.alu('MUL', operand_a, operand_b)
-                self.pc += 3
+            if instBinString in fix_my_run:
+                function = fix_my_run[instBinString]
+                if arguments == "00":
+                    function()
+                    if sets_pc == '0':
+                        self.pc += 1
+                elif arguments == "01":
+                    function(op_1)
+                    if sets_pc == '0':
+                        self.pc += 2
+                elif arguments == "10":
+                    function(op_1, op_2)
+                    if sets_pc == '0':
+                        self.pc += 3
 
-                # PRN, LDI and string problem 
+        
 
-
-
-        # with an if else cascade, go through the bits it give you and decide what instructions you should do
 
