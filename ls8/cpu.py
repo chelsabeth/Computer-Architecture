@@ -11,10 +11,7 @@ class CPU:
         self.reg = [0] * 8 # 8 general-purpose registers R0-R7
         self.reg[7] = 0xF4
         self.pc = 0 
-        # self.ir = 0
-        # self.MAR = 0
-        # self.MDR = 0
-        # self.FL = 0
+        self.fl = '00000000'
 
     def LDI(self, reg, immediate):
         # set the value of a register to an integer
@@ -74,50 +71,23 @@ class CPU:
 
     def JMP(self, reg):
         # jump to the addr stored in the given register
-        self.reg[reg] = self.pc
+        # self.reg[reg] = self.pc
         # set the pc to the addr stored in the given register
         self.pc = self.reg[reg]
 
     def JEQ(self, reg):
         # if equal flag is set to true 
-        if self.reg[9] == '1':
+        if self.fl[7] == '1':
             # jump to the addr stored in the given reg
-            self.reg[reg] = self.pc 
+            self.pc = self.reg[reg] 
+        else:
+            self.pc += 2
 
     def JNE(self, reg):
-        # jump to the addr stored in the given register 
-        self.reg[reg] = self.pc
-        # set the pc to the addr stored in the given reg
-        self.pc = self.reg[reg]
-
-
-
-
-
-#          # Get address of the next instruction
-#         return_addr = pc + 2
-# ​
-#         # Push that on the stack
-#         register[SP] -= 1
-#         address_to_push_to = register[SP]
-#         memory[address_to_push_to] = return_addr
-# ​
-#         # Set the PC to the subroutine address
-#         reg_num = memory[pc + 1]
-#         subroutine_addr = register[reg_num]
-# ​
-#         pc = subroutine_addr
-# ​
-#     elif inst == RET:
-#         # Get return address from the top of the stack
-#         address_to_pop_from = register[SP]
-#         return_addr = memory[address_to_pop_from]
-#         register[SP] += 1
-# ​
-#         # Set the PC to the return address
-#         pc = return_addr
-
-
+        if self.fl[7] == '0':
+            self.pc = self.reg[reg]
+        else:
+            self.pc += 2
 
     def load(self):
         """Load a program into memory."""
@@ -136,7 +106,7 @@ class CPU:
                         self.ram[address] = line
                         address += 1
                     except ValueError:
-                        print("Value Error")
+                        pass
         except FileNotFoundError:
             print(f"Couldn't find file {sys.argv[1]}")
             sys.exit(1)
@@ -150,27 +120,14 @@ class CPU:
         elif op == "MUL":
             self.reg[reg_a] = self.reg[reg_a] * self.reg[reg_b]
         elif op == "CMP":
-            if reg_a < reg_b:
-                reg_a[7] = '1'
-                reg_b[7] = '1'
-                reg_a[8] = '0'
-                reg_b[8] = '0'
-                reg_a[9] = '0'
-                reg_b[9] = '0'
-            elif reg_a > reg_b:
-                reg_a[8] = '1'
-                reg_b[8] = '1'
-                reg_a[7] = '0'
-                reg_b[7] = '0'
-                reg_a[9] = '0'
-                reg_b[9] = '0'
-            elif reg_a == reg_b:
-                reg_a[9] = '1'
-                reg_b[9] = '1'
-                reg_a[8] = '0'
-                reg_b[8] = '0'
-                reg_a[7] = '0'
-                reg_b[7] = '0'
+            value1 = self.reg[reg_a]
+            value2 = self.reg[reg_b]
+            if value1 < value2:
+                self.fl = '00000100'
+            elif value1 > value2:
+                self.fl = '00000010'
+            elif value1 == value2:
+                self.fl = '00000001'
         else:
             raise Exception("Unsupported ALU operation")
         
@@ -233,7 +190,7 @@ class CPU:
             op_2 = self.ram_read(self.pc+2)
 
             instBinString = format(ir, '#010b')
-            arguments = instBinString[2:4] # Was 2:3
+            arguments = instBinString[2:4]
             alu_op = instBinString[4]
             sets_pc = instBinString[5]
             inst_id = instBinString[6:]
