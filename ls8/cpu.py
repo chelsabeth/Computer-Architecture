@@ -9,6 +9,7 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0] * 256 # 256 bytes of memory 
         self.reg = [0] * 8 # 8 general-purpose registers R0-R7
+        self.reg[7] = 0xF4
         self.pc = 0 
         # self.ir = 0
         # self.MAR = 0
@@ -27,6 +28,29 @@ class CPU:
     def HLT(self):
         # halt the CPU
         exit()
+
+    def POP(self, reg):
+        addr_to_pop_from = self.reg[7]
+        value = self.ram_read(addr_to_pop_from)
+
+        # Store in the given register
+        reg_num = self.ram_read(self.pc + 1)
+        self.reg[reg_num] = value
+
+        # Increment SP
+        self.reg[7] += 1
+
+        # self.pc += 2
+        
+
+    def PUSH(self, reg):
+        self.reg[7] -= 1
+
+        reg_num = self.ram_read(self.pc + 1)
+        value = self.reg[reg_num]
+
+        addr_to_push_to = self.reg[7]
+        self.ram_write(value, addr_to_push_to)
 
 
     def load(self):
@@ -96,38 +120,7 @@ class CPU:
     def ram_write(self, write, address):
         self.ram[address] = write
     
-
-    # def run(self):
-    #     """Run the CPU."""
-    #     running = True
-
-    #     while running:
-    #         # read the memory address that's stored in pc and store the result in ir
-    #         ir = self.ram_read(self.pc) 
-    #         # using ram_read(), read the bytes at pc+1 and pc+2
-    #         # from RAM into variables operand_a and operand_b
-    #         operand_a = self.ram_read(self.pc+1)
-    #         operand_b = self.ram_read(self.pc+2)
-    #         instBinString = format(ir, '#010b')
-    #         # console log instBinString
-    #         # set the pc according 
-
-    #         operands_count = instBinString[2:3]
-    #         alu_op = instBinString[4]
-    #         sets_pc = instBinString[5]
-    #         inst_id = instBinString[6:]
-
-    #         if inst_id == '0001':
-    #             self.HLT()
-    #         elif inst_id == '0010' and alu_op == '0':
-    #             self.LDI(operand_a, operand_b)
-    #             self.pc += 3
-    #         elif inst_id == '0111':
-    #             self.PRN(operand_a)
-    #             self.pc += 2
-    #         elif inst_id == '0010' and alu_op == '1':
-    #             self.alu('MUL', operand_a, operand_b)
-    #             self.pc += 3
+    
 
     def run(self):
         running = True
@@ -136,7 +129,9 @@ class CPU:
             '0b00000001': self.HLT,
             '0b10000010': self.LDI,
             '0b01000111': self.PRN,
-            '0b10100010': self.MUL
+            '0b10100010': self.MUL,
+            '0b01000101': self.PUSH,
+            '0b01000110': self.POP
         }
 
         while running:
@@ -164,7 +159,5 @@ class CPU:
                     function(op_1, op_2)
                     if sets_pc == '0':
                         self.pc += 3
-
-        
 
 
