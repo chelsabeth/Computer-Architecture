@@ -14,27 +14,21 @@ class CPU:
         self.fl = '00000000'
 
     def LDI(self, reg, immediate):
-        # set the value of a register to an integer
         self.reg[reg] = immediate 
 
     def PRN(self, reg):
-        # print numeric value stored in the given register 
-        # print in the console the decimal integer value that is stored in the given register
         print(self.reg[reg])
 
     def HLT(self):
-        # halt the CPU
         exit()
 
     def POP(self, reg):
         addr_to_pop_from = self.reg[7]
         value = self.ram_read(addr_to_pop_from)
 
-        # Store in the given register
         reg_num = self.ram_read(self.pc + 1)
         self.reg[reg_num] = value
 
-        # Increment SP
         self.reg[7] += 1
         
 
@@ -70,15 +64,10 @@ class CPU:
         self.alu('ADD', reg_a, reg_b)
 
     def JMP(self, reg):
-        # jump to the addr stored in the given register
-        # self.reg[reg] = self.pc
-        # set the pc to the addr stored in the given register
         self.pc = self.reg[reg]
 
     def JEQ(self, reg):
-        # if equal flag is set to true 
         if self.fl[7] == '1':
-            # jump to the addr stored in the given reg
             self.pc = self.reg[reg] 
         else:
             self.pc += 2
@@ -145,8 +134,6 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
